@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Market Structure Lab</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #070b11;
+      --panel: #0d131c;
+      --panel-2: #111925;
+      --border: #202b39;
+      --text: #eef4fb;
+      --muted: #8290a3;
+      --green: #22c55e;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --blue: #38bdf8;
+      --purple: #a78bfa;
+    }
+
+    body {
+      font-family: Inter, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: 245px 1fr;
+      min-height: 100vh;
+    }
+
+    /* SIDEBAR */
+
+    .sidebar {
+      border-right: 1px solid var(--border);
+      background: #090e15;
+      padding: 24px 16px;
+    }
+
+    .brand {
+      margin-bottom: 34px;
+    }
+
+    .brand h1 {
+      font-size: 18px;
+      letter-spacing: 0.5px;
+    }
+
+    .brand p {
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 6px;
+      letter-spacing: 1px;
+    }
+
+    .nav-item {
+      padding: 12px 14px;
+      margin: 6px 0;
+      border-radius: 8px;
+      color: #9eabba;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .nav-item:hover,
+    .nav-item.active {
+      background: #131d29;
+      color: white;
+    }
+
+    .system-status {
+      margin-top: 35px;
+      border-top: 1px solid var(--border);
+      padding-top: 20px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .online {
+      color: var(--green);
+      margin-top: 8px;
+    }
+
+    /* MAIN */
+
+    .main {
+      padding: 25px 30px 50px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 28px;
+    }
+
+    .topbar h2 {
+      font-size: 24px;
+    }
+
+    .topbar p {
+      color: var(--muted);
+      margin-top: 6px;
+      font-size: 13px;
+    }
+
+    .mode {
+      background: #102318;
+      border: 1px solid #1f6137;
+      color: #70e29b;
+      padding: 9px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    /* REGIME */
+
+    .regime-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+    }
+
+    .label {
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    .value {
+      font-size: 23px;
+      font-weight: 700;
+      margin-top: 10px;
+    }
+
+    .green { color: var(--green); }
+    .amber { color: var(--amber); }
+    .red { color: var(--red); }
+    .blue { color: var(--blue); }
+
+    .sub {
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 7px;
+    }
+
+    /* WORKSPACE */
+
+    .workspace {
+      display: grid;
+      grid-template-columns: 1.65fr 1fr;
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-size: 14px;
+      margin-bottom: 15px;
+    }
+
+    /* FUNNEL */
+
+    .funnel {
+      display: grid;
+      gap: 9px;
+    }
+
+    .funnel-row {
+      display: grid;
+      grid-template-columns: 170px 1fr 65px;
+      align-items: center;
+      gap: 12px;
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      padding: 11px 13px;
+      border-radius: 8px;
+    }
+
+    .bar {
+      height: 7px;
+      background: #1c2633;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .fill {
+      height: 100%;
+      border-radius: 10px;
+      background: linear-gradient(90deg, #22c55e, #38bdf8);
+    }
+
+    .score {
+      text-align: right;
+      font-weight: bold;
+    }
+
+    /* HEAD OF DESK */
+
+    .decision {
+      border: 1px solid #1e6d3a;
+      background:
+        linear-gradient(180deg, rgba(34,197,94,.08), transparent),
+        var(--panel);
+    }
+
+    .decision-badge {
+      display: inline-block;
+      background: #12351f;
+      color: #75e59d;
+      padding: 7px 12px;
+      border-radius: 6px;
+      font-weight: bold;
+      margin: 13px 0;
+    }
+
+    .decision-score {
+      font-size: 48px;
+      font-weight: 800;
+      margin: 10px 0;
+    }
+
+    .decision-score span {
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .reason {
+      color: #aab6c5;
+      font-size: 12px;
+      line-height: 1.7;
+      margin-top: 12px;
+    }
+
+    /* SETUPS */
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      text-align: left;
+      color: var(--muted);
+      font-size: 10px;
+      text-transform: uppercase;
+      padding: 11px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 13px 11px;
+      border-bottom: 1px solid #17212d;
+      font-size: 12px;
+    }
+
+    .grade {
+      font-weight: bold;
+    }
+
+    .status {
+      padding: 5px 8px;
+      border-radius: 5px;
+      font-size: 10px;
+      font-weight: bold;
+    }
+
+    .trade {
+      background: #12351f;
+      color: #72e29a;
+    }
+
+    .wait {
+      background: #352a10;
+      color: #f5bf50;
+    }
+
+    .reject {
+      background: #381515;
+      color: #ff7777;
+    }
+
+    /* RISK */
+
+    .bottom-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-top: 20px;
+    }
+
+    .metric {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 14px;
+      padding-bottom: 9px;
+      border-bottom: 1px solid #19232f;
+      font-size: 12px;
+    }
+
+    .metric span:first-child {
+      color: var(--muted);
+    }
+
+    .warning {
+      margin-top: 15px;
+      padding: 10px;
+      background: #301e0c;
+      border: 1px solid #6e4313;
+      border-radius: 7px;
+      color: #f5b74e;
+      font-size: 11px;
+    }
+
+    @media(max-width: 1000px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        display: none;
+      }
+
+      .regime-grid,
+      .bottom-grid {
+        grid-template-columns: repeat(2,1fr);
+      }
+
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <aside class="sidebar">
+
+    <div class="brand">
+      <h1>MARKET STRUCTURE LAB</h1>
+      <p>SWING TRADING COMMAND CENTER</p>
+    </div>
+
+    <div class="nav-item active">▣ Dashboard</div>
+    <div class="nav-item">⌕ Market Scanner</div>
+    <div class="nav-item">◇ Setups</div>
+    <div class="nav-item">▥ Charts & Structure</div>
+    <div class="nav-item">◈ Backtest Lab</div>
+    <div class="nav-item">◆ Risk Engine</div>
+    <div class="nav-item">▤ Paper Trading</div>
+    <div class="nav-item">▦ Journal</div>
+    <div class="nav-item">⚙ Settings</div>
+
+    <div class="system-status">
+      SYSTEM STATUS
+      <div class="online">● Research Engine Online</div>
+      <div style="margin-top:8px;">Mode: Paper Trading</div>
+      <div style="margin-top:8px;">Execution: Manual Only</div>
+    </div>
+
+  </aside>
+
+
+  <main class="main">
+
+    <div class="topbar">
+
+      <div>
+        <h2>Institutional Research Desk</h2>
+        <p>Market → Sector → Stock → Structure → Risk → Decision</p>
+      </div>
+
+      <div class="mode">PAPER TRADING MODE</div>
+
+    </div>
+
+
+    <section class="regime-grid">
+
+      <div class="card">
+        <div class="label">Market Regime</div>
+        <div class="value green">BULLISH</div>
+        <div class="sub">Example data • Awaiting live feed</div>
+      </div>
+
+      <div class="card">
+        <div class="label">Nifty 50 Structure</div>
+        <div class="value green">HH / HL</div>
+        <div class="sub">Higher-high / higher-low structure</div>
+      </div>
+
+      <div class="card">
+        <div class="label">Breadth</div>
+        <div class="value blue">68%</div>
+        <div class="sub">Sample advancing participation</div>
+      </div>
+
+      <div class="card">
+        <div class="label">Portfolio Risk</div>
+        <div class="value green">LOW</div>
+        <div class="sub">0.00% live capital at risk</div>
+      </div>
+
+    </section>
+
+
+    <section class="workspace">
+
+      <div class="card">
+
+        <h3 class="section-title">Decision Funnel</h3>
+
+        <div class="funnel">
+
+          <div class="funnel-row">
+            <div>Market Regime</div>
+            <div class="bar"><div class="fill" style="width:88%"></div></div>
+            <div class="score">88</div>
+          </div>
+
+          <div class="funnel-row">
+            <div>Sector Strength</div>
+            <div class="bar"><div class="fill" style="width:82%"></div></div>
+            <div class="score">82</div>
+          </div>
+
+          <div class="funnel-row">
+            <div>Relative Strength</div>
+            <div class="bar"><div class="fill" style="width:86%"></div></div>
+            <div class="score">86</div>
+          </div>
+
+          <div class="funnel-row">
+            <div>Price Action</div>
+            <div class="bar"><div class="fill" style="width:91%"></div></div>
+            <div class="score">91</div>
+          </div>
+
+          <div class="funnel-row">
+            <div>Volume Confirmation</div>
+            <div class="bar"><div class="fill" style="width:79%"></div></div>
+            <div class="score">79</div>
+          </div>
+
+          <div class="funnel-row">
+            <div>Order Block</div>
+            <div class="bar"><div class="fill" style="width:84%"></div></div>
+            <div class="score">84</div>
+          </div>
+
+          <div class="funnel-row">
+            <div>Historical Evidence</div>
+            <div class="bar"><div class="fill" style="width:76%"></div></div>
+            <div class="score">76</div>
+          </div>
+
+          <div class="funnel-row">
+            <div>Risk Quality</div>
+            <div class="bar"><div class="fill" style="width:93%"></div></div>
+            <div class="score">93</div>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="card decision">
+
+        <div class="label">HEAD OF DESK</div>
+
+        <div class="decision-score">
+          86<span>/100</span>
+        </div>
+
+        <div class="decision-badge">WAIT FOR ENTRY</div>
+
+        <div class="reason">
+          Market and sector conditions are supportive.
+          Price structure is constructive and relative strength is positive.
+          Entry is not authorized until the predefined trigger and invalidation
+          conditions are satisfied.
+        </div>
+
+        <div class="warning">
+          DEMO ONLY — no real trade recommendation. Live market data and
+          validated backtesting are not connected yet.
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <section class="card">
+
+      <h3 class="section-title">Top Ranked Setups</h3>
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>Stock</th>
+            <th>Sector</th>
+            <th>Setup</th>
+            <th>Structure</th>
+            <th>Score</th>
+            <th>R:R</th>
+            <th>Evidence</th>
+            <th>Desk Status</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          <tr>
+            <td><strong>DEMO-A</strong></td>
+            <td>Banking</td>
+            <td>Pullback + OB</td>
+            <td class="green">HH / HL</td>
+            <td class="grade green">86</td>
+            <td>1 : 3.2</td>
+            <td>42 samples</td>
+            <td><span class="status wait">WAIT</span></td>
+          </tr>
+
+          <tr>
+            <td><strong>DEMO-B</strong></td>
+            <td>Auto</td>
+            <td>Breakout Retest</td>
+            <td class="green">Bullish</td>
+            <td class="grade green">82</td>
+            <td>1 : 2.8</td>
+            <td>61 samples</td>
+            <td><span class="status trade">QUALIFIED</span></td>
+          </tr>
+
+          <tr>
+            <td><strong>DEMO-C</strong></td>
+            <td>IT</td>
+            <td>Liquidity Sweep</td>
+            <td class="amber">Range</td>
+            <td class="grade amber">71</td>
+            <td>1 : 2.1</td>
+            <td>18 samples</td>
+            <td><span class="status wait">WATCH</span></td>
+          </tr>
+
+          <tr>
+            <td><strong>DEMO-D</strong></td>
+            <td>Metal</td>
+            <td>Failed Breakout</td>
+            <td class="red">Weak</td>
+            <td class="grade red">54</td>
+            <td>1 : 1.4</td>
+            <td>9 samples</td>
+            <td><span class="status reject">REJECT</span></td>
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </section>
+
+
+    <section class="bottom-grid">
+
+      <div class="card">
+
+        <div class="label">Historical Evidence</div>
+
+        <div class="metric">
+          <span>Comparable Setups</span>
+          <strong>42</strong>
+        </div>
+
+        <div class="metric">
+          <span>Win Rate</span>
+          <strong>Demo 61.9%</strong>
+        </div>
+
+        <div class="metric">
+          <span>Average Winner</span>
+          <strong class="green">+2.40R</strong>
+        </div>
+
+        <div class="metric">
+          <span>Average Loser</span>
+          <strong class="red">-1.00R</strong>
+        </div>
+
+        <div class="metric">
+          <span>Expectancy</span>
+          <strong class="green">+1.10R</strong>
+        </div>
+
+      </div>
+
+
+      <div class="card">
+
+        <div class="label">Risk Engine</div>
+
+        <div class="metric">
+          <span>Account Capital</span>
+          <strong>Paper Account</strong>
+        </div>
+
+        <div class="metric">
+          <span>Risk / Trade</span>
+          <strong>0.50%</strong>
+        </div>
+
+        <div class="metric">
+          <span>Portfolio Heat</span>
+          <strong class="green">0.00%</strong>
+        </div>
+
+        <div class="metric">
+          <span>Minimum R:R</span>
+          <strong>1 : 2</strong>
+        </div>
+
+        <div class="metric">
+          <span>Risk Veto</span>
+          <strong class="green">ACTIVE</strong>
+        </div>
+
+      </div>
+
+
+      <div class="card">
+
+        <div class="label">Research Integrity</div>
+
+        <div class="metric">
+          <span>Live Data</span>
+          <strong class="amber">NOT CONNECTED</strong>
+        </div>
+
+        <div class="metric">
+          <span>Backtest</span>
+          <strong class="amber">NOT VALIDATED</strong>
+        </div>
+
+        <div class="metric">
+          <span>News Engine</span>
+          <strong class="amber">PENDING</strong>
+        </div>
+
+        <div class="metric">
+          <span>OI / Derivatives</span>
+          <strong class="amber">PENDING</strong>
+        </div>
+
+        <div class="metric">
+          <span>Broker Execution</span>
+          <strong class="red">DISABLED</strong>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+</div>
+
+</body>
+</html>
